@@ -1,4 +1,4 @@
-### ◆ Data Flow Diagram (DFD)
+### ◆ Technical Workflow & Data Flow Diagram (DFD)
 This sequence diagram details the Database Transactions. We use "Double-Entry" logic (Deduct first, Hold, then Release) to ensure money is never lost.
 ```mermaid
 sequenceDiagram
