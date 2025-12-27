@@ -5,7 +5,7 @@ From posting a task to getting paid.
 graph TD
     Login[Login] --> Home[Quest page]
     Home --> Post[Post Quest]
-    Post --> Escrow[Funds held in Escrow]
+    Post --> Escrow[Funds lock in Escrow]
     Escrow --> Hero[Hero Accepts Quest]
     Hero --> OTP[OTP Verification]
     OTP --> Release[Payment Released to Hero's wallet]
