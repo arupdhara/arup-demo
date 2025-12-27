@@ -18,7 +18,7 @@ University campuses are isolated economies with inefficient "favor" systems. Stu
 * **📊 Legendary Dashboard:** Users track their journey with total earnings, completion stats, and a level-based XP system.
 
 ### 🛡️ Security & Architecture (The "Brain")
-* **🔐 Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified student access.
+* **🔐 Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified college member access.
 * **💰 Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the MySQL database and released only when the provider shares a secret OTP.
 * **💬 In-App Hero Chat:** A private communication channel for Task Providers and Heroes to negotiate details without sharing personal phone numbers.
 
