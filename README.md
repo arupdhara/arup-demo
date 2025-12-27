@@ -4,20 +4,27 @@
 **"Summon a Hero. Delegate your chaos."**
 
 ### ◆ Problem Statement
-University campuses are isolated economies with inefficient "favor" systems. Students struggle to find help for small tasks (printing, food delivery, laundry pickup) while others have free time but no way to monetize it. Existing platforms (Dunzo, Uber) cannot enter hostels or classrooms.
+University campuses are isolated economies with inefficient "favor" systems. Students struggle to find help for small tasks (printing, food delivery, laundry pickup, need a cycle for 1 hour) while others have free time but no way to monetize it. Existing platforms cannot enter hostels or classrooms.
 
 ### ◆ Proposed Solution
 **Campus Jugaad** is a closed-loop, secure marketplace designed exclusively for university campuses. It transforms the informal economy into a tech-driven system where students can outsource tasks to verified peers ("Heroes") safely.
 
-### 🌟 Key Features (New & Improved)
-1.  **🔐 Closed-Campus Authentication (New)**
-    * **Sign Up/Login:** Secure access restricted to university email IDs (e.g., `@nit.ac.in`). This creates a "Trusted Zone" where every user is a verified student.
-    
-2.  **💬 In-App Hero Chat (New)**
-    * **Real-Time Negotiation:** Task Providers and Heroes can chat instantly to clarify details ("Which print shop?", "Room number?") without sharing personal phone numbers, preserving privacy.
+## 🌟 Key Features
 
-3.  **🛡️ Escrow-Backed Payments**
-    * Funds are locked when a task is posted and only released via a secure OTP verification upon completion.
+### 🎮 The Gamified Experience (User-Facing)
+* **⚔️ Gamified Quest System:** Tasks aren't just chores; they are "Quests" with specific bounties, deadlines, and urgency levels (Low/Medium/Urgent).
+* **🦸 Hero Feed:** A real-time marketplace where students can find, filter, and accept quests based on location and reward to become the campus "Hero."
+* **🏆 Competitive Leaderboards:** Students compete for "Guild Wars" (Hostel vs. Hostel) dominance. Top performers on the leaderboard earn real-world campus perks.
+* **📊 Legendary Dashboard:** Users track their journey with total earnings, completion stats, and a level-based XP system.
+
+### 🛡️ Security & Architecture (The "Brain")
+* **🔐 Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified student access.
+* **💰 Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the MySQL database and released only when the provider shares a secret OTP.
+* **💬 In-App Hero Chat:** A private communication channel for Task Providers and Heroes to negotiate details without sharing personal phone numbers.
+
+### 🎨 Design & Accessibility
+* **📱 Mobile-First Design:** Fully responsive layout optimized for on-the-go campus use between classes.
+* **✨ Glassmorphic UI:** A modern, sleek interface featuring fluid animations and full Dark/Light mode support.
 
 ### 📊 Feasibility & Impact
 * **Market Size:** ~5,000 students per average technical campus.
