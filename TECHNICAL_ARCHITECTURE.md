@@ -1,5 +1,3 @@
-# ⚙️ Technical Architecture & Workflows
-
 ### ◆ User Flow (Flow Chart)
 This flow demonstrates the **Financial Escrow Logic** integrated with the user journey.
 
