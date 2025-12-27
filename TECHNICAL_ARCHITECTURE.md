@@ -21,13 +21,13 @@ graph TD
     Login --> Dashboard[User Dashboard]
     
     subgraph "Marketplace Logic"
-        Dashboard --> Post[Task Provider: Post Task]
+        Dashboard --> Post[Task Master: Post Task]
         Dashboard --> Feed[Hero: Browse Feed]
         
         Post --> DB[(Database)]
         Feed --> Bid[Hero: Bid on Task]
         
-        Bid --> Accept[Provider: Accept Bid]
+        Bid --> Accept[Task Master: Accept Bid]
         
         %% Financial Step 1
         Accept --> Deduct{Check Balance}
@@ -39,7 +39,8 @@ graph TD
         Execute --> OTP[OTP Verification]
         
         %% Financial Step 2
-        OTP --> Release[Unlock Funds & Transfer to Hero]
+        OTP -- Matched --> Release[Unlock Funds & Transfer to Hero]
+        OTP -- Mismatched --> Denied[Refund to Task Master]
         Release --> Finish((Task Complete))
     end
 ```
@@ -87,7 +88,7 @@ This structural diagram shows how our Tech Stack components interact. We follow 
 ```mermaid
 graph TD
     subgraph "Client Side (Frontend)"
-        User[Student User]
+        User[User]
         UI[React + Vite App]
         User -->|Interacts| UI
     end
@@ -112,3 +113,16 @@ graph TD
         Logic -->|SQL Queries| DB
         Auth -->|Verify Creds| DB
     end
+```
+### ◆ Architecture Explanation
+*We utilize a Client-Server Architecture with strict financial handling:*
+
+**Presentation Layer**: React.js handles the UI, Chat interface, and state management.
+
+**Application Layer**: Node.js/Express acts as the middleware. Crucially, it handles ACID Transactions for the wallet.
+
+*Why*: If the server crashes after deducting money from the Provider but before assigning the Hero, the database transaction rolls back, ensuring no money is ever "lost" in the system.
+
+**Data Layer**: MySQL stores relational data (Users, Tasks, Chat Logs) and the Escrow State.
+
+**Escrow Logic**: Money does not go directly from A to B. It moves Provider -> Escrow Table -> Hero.
