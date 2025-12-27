@@ -3,11 +3,12 @@ From posting a task to getting paid.
 
 ```mermaid
 graph TD
-    Login[Login] --> Home[Quest page]
+    Login[Login] --> Home[Task Master page]
     Home --> Post[Post Quest]
     Post --> Escrow[Funds lock in Escrow]
     Escrow --> Hero[Hero Accepts Quest]
-    Hero --> OTP[OTP Verification]
+    Hero --> Done[Quest Accomplished]
+    Done --> OTP[OTP Verification]
     OTP --> Release[Payment Released to Hero's wallet]
 ```
 ### ◆ Technical Workflow
@@ -17,12 +18,13 @@ graph TD
     Start((Start)) --> Auth{Has Account?}
     Auth -- No --> SignUp
     Auth -- Yes --> Login[Login]
+    SignUp --> Dashboard[Select Role]
     
-    Login --> Dashboard[User Dashboard]
+    Login --> Dashboard[Select Role]
     
     subgraph "Marketplace Logic"
-        Dashboard --> Post[Task Master: Post Task]
-        Dashboard --> Feed[Hero: Browse Feed]
+        Dashboard -- Task Master --> Post[Post Task]
+        Dashboard -- Hero --> Feed[Browse Feed]
         
         Post --> DB[(Database)]
         Feed --> Bid[Hero: Bid on Task]
