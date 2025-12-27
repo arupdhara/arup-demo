@@ -21,7 +21,7 @@ While others have free time but no way to monetize it. Existing platforms cannot
 
 ###  Security & Architecture (The "Brain")
 * **Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified college member access.
-* **Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the MySQL database and released only when the provider shares a secret OTP.
+* **Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the MySQL database and released only when the task provider shares a secret OTP.
 * **In-App Hero Chat:** A private communication channel for Task Masters and Heroes to negotiate details without sharing personal phone numbers.
 
 ###  Design & Accessibility
