@@ -32,7 +32,7 @@ graph TD
         Dashboard -- Task Master --> Post[Post Task]
         Post --> Check{Balance > Price?}
         Check -- No --> Fail[Error: Insufficient Funds]
-        Check -- Yes --> Lock[Debit Wallet -> Create Task -> Start Timer]
+        Check -- Yes --> Lock[Debit Wallet -> Create Task]
         
         %% Hero Flow
         Lock --> Feed[Live Global Feed]
@@ -45,7 +45,7 @@ graph TD
         Execute --> Verify{Enter OTP}
         
         Verify -- Valid --> Success[Unlock Funds -> Credit Hero]
-        Verify -- Invalid --> Retry[Error: Wrong Code]
+        Verify -- Invalid --> Retry[Error: Incorrect OTP!]
         
         %% Auto-Refund Logic
         Execute -- Timeout --> Refund[Auto-Refund to Task Master]
