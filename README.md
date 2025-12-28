@@ -27,7 +27,7 @@ While others have free time but no way to monetize it. Existing platforms cannot
 * **Mobile-First Design:** Fully responsive layout optimized for on-the-go campus use between classes.
 * **Glassmorphic UI:** A modern, sleek interface featuring fluid animations and full Dark/Light mode support.
 
-*Note on Scope: For this hackathon, we focused exclusively on the Core Marketplace Logic. Secondary modules like Filter, Sort by, User Profile, Settings, and Help Centre are currently static UI placeholders.*
+*Note on Scope: For this hackathon, we focused exclusively on the Core Marketplace Logic. Secondary modules like User Profile, Settings, and Help Centre are currently static UI placeholders.*
 
 ##  Feasibility & Impact
 * **Market Size:** ~5,000 students per average technical campus.
