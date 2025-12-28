@@ -15,7 +15,7 @@ While others have free time but no way to monetize it. Existing platforms cannot
 
 ###  The Gamified Experience (User-Facing)
 * **Gamified Quest System:** Tasks aren't just chores; they are *"Quests"* with specific bounties, deadlines, and urgency levels (Low/Medium/Urgent).
-* **Hero Feed:** A real-time marketplace where students can find, filter, and accept quests based on location and reward to become the campus *"Hero"*.
+* **Hero Feed:** A real-time marketplace where students can find and accept quests based on location and reward to become the campus *"Hero"*.
 * **Legendary Dashboard:** Users track their journey with total earnings, completion stats, and a level-based XP system.
 
 ###  Security & Architecture (The "Brain")
