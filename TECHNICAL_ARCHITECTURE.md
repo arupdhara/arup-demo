@@ -121,7 +121,7 @@ graph TD
         Auth[Auth Middleware]
         Logic[Escrow & OTP Logic]
         
-        UI -->|HTTP Requests: Axios| API
+        UI -->|HTTP Requests| API
         API --> Auth
         API --> Logic
     end
