@@ -78,4 +78,3 @@ While others have free time but no way to monetize it. Existing platforms cannot
 
 ---
 *For detailed architecture and diagrams, see [TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)*
-*For future plans, see [ROUND_2_ROADMAP.md](./ROUND_2_ROADMAP.md)*
