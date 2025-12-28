@@ -71,7 +71,7 @@ sequenceDiagram
     API-->>TM: "Hero found!"
 
     rect rgb(30, 30, 30)
-        Note right of API: ESCROW STATE: Money is held in Task Doc
+        Note right of API: ESCROW STATE: Money is held
         TM->>H: Chat: "Bring to Block A"
         H->>TM: Chat: "Arrived, give OTP"
     end
