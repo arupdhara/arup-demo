@@ -33,7 +33,7 @@ While others have free time but no way to monetize it. Existing platforms cannot
 *Note on Scope: For this hackathon, we focused exclusively on the Core Marketplace Logic. Secondary modules like User Profile, Settings, and Help Centre are currently static UI placeholders.*
 
 ## Demo Video
-[🌐 Live Demo]([https://www.example.com](https://www.youtube.com/watch?v=1uiUTcwBCmg))
+[🌐 Live Demo](https://www.youtube.com/watch?v=1uiUTcwBCmg)
 
 ##  Feasibility & Impact
 * **Market Size:** ~5,000 students per average technical campus.
