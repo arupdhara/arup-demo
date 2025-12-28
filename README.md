@@ -40,15 +40,14 @@ While others have free time but no way to monetize it. Existing platforms cannot
 ## Tech Stack
 
 ### Client (Frontend)
-* **Library:** React.js (Vite)
+* **Library:** React.js
+* **Build Tool:** Vite
 * **Styling:** Tailwind CSS (Glassmorphism)
-* **State Management:** React Context API
-* **HTTP Client:** Axios
 
 ### Server (Backend)
+* **Language:** TypeScript
 * **Runtime:** Node.js
 * **Framework:** Express.js
-* **Auth:** JWT (JSON Web Tokens) with Custom Middleware
 
 ### Database
 * **Database:** MongoDB (NoSQL)
