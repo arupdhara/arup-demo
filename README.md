@@ -14,30 +14,66 @@ While others have free time but no way to monetize it. Existing platforms cannot
 ##  Key Features
 
 ###  The Gamified Experience (User-Facing)
-* **Gamified Quest System:** Tasks aren't just chores; they are "Quests" with specific bounties, deadlines, and urgency levels (Low/Medium/Urgent).
-* **Hero Feed:** A real-time marketplace where students can find, filter, and accept quests based on location and reward to become the campus "Hero."
-* **Competitive Leaderboards:** Students compete for "Guild Wars" (Hostel vs. Hostel) dominance. Top performers on the leaderboard earn real-world campus perks.
+* **Gamified Quest System:** Tasks aren't just chores; they are *"Quests"* with specific bounties, deadlines, and urgency levels (Low/Medium/Urgent).
+* **Hero Feed:** A real-time marketplace where students can find, filter, and accept quests based on location and reward to become the campus *"Hero"*.
 * **Legendary Dashboard:** Users track their journey with total earnings, completion stats, and a level-based XP system.
 
 ###  Security & Architecture (The "Brain")
 * **Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified college member access.
-* **Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the MySQL database and released only when the task provider shares a secret OTP.
+* **Zero-Fraud Escrow Wallet:** Payments are held in a secure `Escrow State` within the database and released only when the task provider (*"Task Master"*) shares a secret OTP.
 * **In-App Hero Chat:** A private communication channel for Task Masters and Heroes to negotiate details without sharing personal phone numbers.
 
 ###  Design & Accessibility
 * **Mobile-First Design:** Fully responsive layout optimized for on-the-go campus use between classes.
 * **Glassmorphic UI:** A modern, sleek interface featuring fluid animations and full Dark/Light mode support.
 
-###  Feasibility & Impact
+*Note on Scope: For this hackathon, we focused exclusively on the Core Marketplace Logic. Secondary modules like Filter, Sort by, User Profile, Settings, and Help Centre are currently static UI placeholders.*
+
+##  Feasibility & Impact
 * **Market Size:** ~5,000 students per average technical campus.
 * **Economic Impact:** projected **₹50,000+** monthly transaction volume in pilot phase.
 * **Time Saving:** Average student saves **~3 hours/week** by outsourcing logistics.
 
-###  Tech Stack
-* **Frontend:** React.js, Vite, Tailwind CSS (Glassmorphism UI).
-* **Backend:** Node.js, Express.js.
-* **Database:** MySQL (Relational Data for transactions).
-* **Auth:** JWT / Custom Campus Verification.
+## Tech Stack
+
+### Client (Frontend)
+* **Library:** React.js (Vite)
+* **Styling:** Tailwind CSS (or CSS Modules)
+* **State Management:** React Context API / Hooks
+* **HTTP Client:** Axios
+
+### Server (Backend)
+* **Runtime:** Node.js
+* **Framework:** Express.js
+* **Auth:** JWT (JSON Web Tokens) with Custom Middleware
+
+### Database
+* **Database:** MongoDB (NoSQL)
+* **ODM (Object Data Modeling):** Mongoose
+* **Storage:** MongoDB Atlas (Cloud) or Local Instance
+
+##  Limitations & Constraints
+
+### 1. Financial Compliance (Regulatory)
+* **No Real Banking API:** Currently, the "Wallet" uses a closed-loop virtual currency system. We have not integrated a real Payment Gateway (like Razorpay/Stripe) due to **KYC (Know Your Customer)** and legal requirements for handling real money between peers.
+* **Cash-Out Logic:** Students cannot currently withdraw their virtual earnings to a bank account; this feature requires banking partnerships planned for phase 3 (the final production version).
+
+### 2. Operational Logic
+* **Binary Dispute Resolution:** The system currently assumes that if the OTP is shared, the task is successfully completed. We lack a **"Conflict Resolution Center"** for edge cases (e.g., "The Hero brought the wrong food item").
+* **Open-Access Sandbox (Verification):** While the Sign-Up UI *advises* users to enter an institutional email (showing `student@college.edu` as a placeholder), the backend validation is currently **permissive**. (We allow `@gmail.com` signups also) So that judges and hackathon testers can easily access the platform without needing a fake university ID.(No verification is there in the backend)
+
+### 3. Communication & Support
+* **No Auto-Refund Mechanism:** Currently, if a task is cancelled or fails, the funds remain locked in the Escrow state. We have not yet implemented the "Rollback Transaction" logic to automatically refund the Task Master's wallet; this requires a manual admin intervention.
+
+## Features for Round 2
+
+### 1. Trust & Safety Upgrade
+* **Automated Refund Logic:** Implementing a "Time-to-Live" (TTL) for tasks. If a task is not completed within the set time (e.g., 2 hours), the Escrow Logic will automatically rollback the transaction and refund the Task Master.
+* **Dispute Resolution Center:** A dedicated dashboard where users can upload proof (photos/chats) in case of a conflict. A "Jury System" (admins) will have access to review and resolve these edge cases.
+
+### 2. Advanced Marketplace Engine
+* **Dynamic Bidding Wars:** Moving beyond fixed prices. "Heroes" can bid higher or lower based on difficulty (e.g., "I'll print it for ₹40, but I need ₹10 extra for rain"). Task Masters can then select the best candidate based on price and rating.
+* **"Bundled" Tasks:** Allowing a Hero to accept multiple tasks from the same location (e.g., "Pickup 3 different food orders from the same Canteen") to maximize efficiency and earnings per trip.
 
 ---
 *For detailed architecture and diagrams, see [TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)*
