@@ -17,7 +17,7 @@ While others have free time but no way to monetize it. Existing platforms cannot
 * **Gamified Quest System:** Tasks aren't just chores; they are *"Quests"* with specific bounties, deadlines, and urgency levels (Low/Medium/Urgent).
 * **Hero Feed:** A real-time marketplace where students can find and accept quests based on location and reward to become the campus *"Hero"*.
 * **Legendary Dashboard:** Users track their journey with total earnings, completion stats, and a level-based XP system.
-* **Rating System:** After the task is done, the Task Master rates the Hero out of 5 stars. This helps good workers build a strong profile. In the future, this "Trust Score" will let Task Masters pick the best person for the job instead of just the first one.
+* **Rating System:** After the task is done, the Task Master rates the Hero out of 5 stars. This helps trustworthy *Heros* build a strong profile. In the future, this "Trust Score" will let Task Masters pick the best person for the job instead of just the first one.
 
 ###  Security & Architecture
 * **Closed-Campus Authentication:** Integration with university emails (e.g., `@nitdgp.ac.in`) to ensure 100% verified college member access.(Note: Disabled for Hackathon Demo to allow external judges).
