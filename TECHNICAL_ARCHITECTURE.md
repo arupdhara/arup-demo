@@ -46,38 +46,47 @@ graph TD
 This sequence diagram details the Database Transactions. We use "Double-Entry" logic (Deduct first, Hold, then Release) to ensure money is never lost.
 ```mermaid
 sequenceDiagram
-    participant P as Provider (User A)
-    participant API as Node.js Server
-    participant DB as MySQL Database
-    participant H as Hero (User B)
+    participant TM as Task Master
+    participant API as Node.js API
+    participant DB as MongoDB
+    participant H as Hero
 
-    Note over P, DB: Phase 1: Agreement & Escrow Lock
-    P->>API: POST /accept-bid (BidID)
-    API->>DB: BEGIN TRANSACTION
-    DB->>DB: UPDATE users SET wallet = wallet - price WHERE id = Provider
-    DB->>DB: UPDATE tasks SET status = 'IN_PROGRESS', escrow_amount = price
-    DB-->>API: ✅ Transaction Committed
-    API-->>P: "Bid Accepted. Funds Locked."
-    API-->>H: Notification: "You are hired!"
-
-    Note over P, H: Phase 2: Execution & Chat
-    P->>H: Chat: "Please bring it to Block A"
-    H->>P: "I am here. OTP?"
-    P->>H: "OTP is 4590"
-
-    Note over H, DB: Phase 3: Settlement
-    H->>API: POST /verify-otp (OTP: 4590)
-    API->>DB: CHECK secret_otp match?
+    Note over TM, DB: Phase 1: Creation (Money moves to Safe)
+    TM->>API: POST /create-task (Price: X)
+    API->>DB: Check Master Balance
     
-    alt Match Successful
-        API->>DB: BEGIN TRANSACTION
-        DB->>DB: UPDATE tasks SET status = 'COMPLETED', escrow_amount = 0
-        DB->>DB: UPDATE users SET wallet = wallet + price WHERE id = Hero
-        DB-->>API: ✅ Transaction Committed
-        API-->>H: "Payment Received!"
-        API-->>P: "Task Closed."
-    else Match Failed
-        API-->>H: ❌ Error: Incorrect OTP
+    alt Sufficient Funds
+        DB->>DB: $inc: { wallet: -X } (Debit Master)
+        DB->>DB: Insert Task { status: "OPEN", escrow_amt: X }
+        API-->>TM: "Quest Posted & Funds Locked"
+    else Low Balance
+        API-->>TM: Error: Recharge First
+    end
+
+    Note over H, DB: Phase 2: The Agreement
+    H->>API: GET /feed
+    H->>API: POST /accept-task
+    API->>DB: Update Task { status: "IN_PROGRESS", hero: H_ID }
+    API-->>H: "Quest Accepted!"
+    API-->>TM: "Hero found!"
+
+    rect rgb(30, 30, 30)
+        Note right of API: ESCROW STATE: Money is held in Task Doc
+        TM->>H: Chat: "Bring to Block A"
+        H->>TM: Chat: "Arrived, give OTP"
+    end
+
+    Note over H, DB: Phase 3: Completion (Money moves to Hero)
+    H->>API: POST /verify-otp (Code: 1234)
+    API->>DB: Validate OTP
+    
+    alt OTP Valid
+        DB->>DB: Update Task { status: "COMPLETED", escrow_amt: 0 }
+        DB->>DB: $inc: { wallet: +X } (Credit Hero)
+        API-->>H: "Payment Released!"
+        API-->>TM: "Quest Completed"
+    else Invalid OTP
+        API-->>H: Error: Incorrect OTP!
     end
 ```
 ### ◆ System Architecture Diagram (High-Level)
@@ -86,41 +95,29 @@ This structural diagram shows how our Tech Stack components interact. We follow 
 ```mermaid
 graph TD
     subgraph "Client Side (Frontend)"
-        User[User]
-        UI[React + Vite App]
+        User[ Student User]
+        UI[ React + Vite App]
         User -->|Interacts| UI
     end
 ```
 ```mermaid
 graph TD
     subgraph "Server Side (Backend)"
-        API[Node.js + Express API]
-        Auth[Auth Middleware]
-        Logic[Escrow Logic]
+        API[ Node.js + Express API]
+        Auth[ Auth Middleware]
+        Logic[ Escrow Logic]
         
-        UI -->|HTTP Requests| API
+        UI -->|HTTP Requests: Axios| API
         API --> Auth
         API --> Logic
     end
 ```
 ```mermaid
 graph TD
-    subgraph "Data Layer (Storage)"
-        DB[(MySQL Database)]
+    subgraph "Data Layer"
+        DB[( MongoDB)]
         
-        Logic -->|SQL Queries| DB
-        Auth -->|Verify Creds| DB
+        Logic -->|Mongoose Queries| DB
+        Auth -->|Find User Doc| DB
     end
 ```
-### ◆ Architecture Explanation
-*We utilize a Client-Server Architecture with strict financial handling:*
-
-**Presentation Layer**: React.js handles the UI, Chat interface, and state management.
-
-**Application Layer**: Node.js/Express acts as the middleware. Crucially, it handles ACID Transactions for the wallet.
-
-*Why*: If the server crashes after deducting money from the Provider but before assigning the Hero, the database transaction rolls back, ensuring no money is ever "lost" in the system.
-
-**Data Layer**: MySQL stores relational data (Users, Tasks, Chat Logs) and the Escrow State.
-
-**Escrow Logic**: Money does not go directly from A to B. It moves Provider -> Escrow Table -> Hero.
