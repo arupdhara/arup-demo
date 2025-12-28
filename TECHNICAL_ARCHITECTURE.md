@@ -100,7 +100,7 @@ sequenceDiagram
         API-->>H: Error: Incorrect OTP!
     else Deadline Passed (Auto-Refund)
         Note right of API: TTL Expired (No OTP entered)
-        DB->>DB: Update { status: "EXPIRED" }
+        DB->>DB: Update { status: "EXPIRED", escrow_amt: 0 }
         DB->>DB: $inc: { wallet: +X } (Refund Master)
         API-->>TM: "Task Expired. Money Refunded."
     end
