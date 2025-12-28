@@ -18,31 +18,27 @@ graph TD
     Start((Start)) --> Auth{Has Account?}
     Auth -- No --> SignUp
     Auth -- Yes --> Login[Login]
-    SignUp --> Dashboard[Select Role]
-    
-    Login --> Dashboard[Select Role]
+
+    SignUp --> Dashboard{Select Role}    
+    Login --> Dashboard
     
     subgraph "Marketplace Logic"
         Dashboard -- Task Master --> Post[Post Task]
         Dashboard -- Hero --> Feed[Browse Feed]
         
-        Post --> DB[(Database)]
-        Feed --> Bid[Hero: Bid on Task]
+        Post --> Deduct{Check Balance}
+        Deduct -- Insufficient --> Fail[Error: Insufficient Funds]
+        Deduct -- Sufficient --> Lock[Deduct funds from Task Master's wallet & LOCK in Escrow]
+        Lock --> DB[(Database)]
         
-        Bid --> Accept[Task Master: Accept Bid]
-        
-        %% Financial Step 1
-        Accept --> Deduct{Check Balance}
-        Deduct -- Insufficient --> Fail[Error: Low Funds]
-        Deduct -- Sufficient --> Lock[Deduct from Provider & LOCK in Escrow]
-        
-        Lock --> Chat[Open Chat Channel]
+        Feed --> Accept[Accept Quest]        
+        Accept --> Chat[Open Chat Channel]
         Chat --> Execute[Task Execution]
         Execute --> OTP[OTP Verification]
         
         %% Financial Step 2
         OTP -- Matched --> Release[Unlock Funds & Transfer to Hero]
-        OTP -- Mismatched --> Denied[Refund to Task Master]
+        OTP -- Mismatched --> Denied[Error: Incorrect OTP! Please try again]
         Release --> Finish((Task Complete))
     end
 ```
