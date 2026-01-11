@@ -172,14 +172,14 @@ graph TD
 
     %% Flow: Auth
     User -->|Login/Reg Info| P1
-    P1 <-->|Verify Creds| DS_User
+    P1 <-->|Verify Credentials| DS_User
     P1 -->|Session Token| User
 
-    %% Flow: Quests & Verification (UPDATED)
+    %% Flow: Quests & Verification
     User -->|1. Post/Accept/Bid| P2
-    User -->|2. Submit OTP Code| P2
+    User -->|2. Submit OTP| P2
     P2 <-->|Read/Write Quest State| DS_Quest
-    P2 -->|3. Verification Status Success/Fail| User
+    P2 -->|3. Verification Status| User
     
     %% Flow: Financials (Triggered by Quest)
     P2 -->|Request Fund Lock/Release| P3
@@ -243,9 +243,10 @@ graph TD
 sequenceDiagram
     autonumber
     participant TM as Task Master
-    participant H as Hero
     participant API as Node.js API
     participant DB as MongoDB (Atlas)
+    participant H as Hero
+
 
     Note over TM, DB: PHASE 1: POSTING (Debit & Lock)
     
