@@ -156,7 +156,7 @@ graph LR
 ```mermaid
 graph TD
     %% Entities
-    User[Student User]
+    User[User]
     Admin[Admin]
 
     %% Data Stores (Open Rectangles)
@@ -165,8 +165,8 @@ graph TD
     DS_Txn[(Transaction Ledger)]
 
     %% Processes (Rounded Rectangles)
-    P1(1.0 Authentication)
     P2(2.0 Quest Management)
+    P1(1.0 Authentication)
     P3(3.0 Wallet Engine)
     P4(4.0 Dispute Resolution)
 
