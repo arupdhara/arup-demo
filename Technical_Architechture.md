@@ -46,7 +46,7 @@ graph TD
     Verify --> Release[Payment Unlocked to Hero]
     
     Outcome -- Conflict --> Dispute[Raise Dispute]
-    Dispute --> EmailBridge[Email Bridge Activated]
+    Dispute --> EmailBridge[Email Bridge Activated means mail received by both hero and master, they send proof and details through mail]
     EmailBridge --> Admin[Admin Resolves the isuue]
     Admin --> Refund[Refund to Task Master or Pay Hero or Split the money to both]
 ```
@@ -54,33 +54,61 @@ graph TD
 The step-by-step process and logic is shown.
 ```mermaid
 graph TD
-    Start((Start)) --> Auth{Has Account?}
-    Auth -- No --> SignUp
-    Auth -- Yes --> Login[Login]
-
-    subgraph "Marketplace Logic"
-        Login --> Dashboard[Select Role]
-        SignUp --> Dashboard 
+    subgraph "Phase 1: Authentication & Security"
+        Start((Init)) --> CheckSession{Token Exists?}
+        CheckSession -- Yes --> AutoLogin[Restore Session]
+        CheckSession -- No --> AuthScreen
+        
+        AuthScreen --> Action{Create Account or Login?}
+        
+        Action -- Login --> Creds[Verify Email/Pass]
+        Creds -- Success --> LoadUser
+        Creds -- Fail --> ErrorMsg
+        
+        Action -- Create Account --> Validate[Domain/Age Check]
+        Validate -- Pass --> GenOTP[Generate 6-Digit Code]
+        GenOTP --> SendMail[Nodemailer: Send to Inbox]
+        
+        SendMail --> Wait[Wait for OTP Input]
+        Wait --> Verify{Code Matches?}
+        
+        Verify -- No --> Reject[Block Account Creation]
+        Verify -- Yes --> CreateDB[Insert User into MongoDB]
+        CreateDB --> LoadUser
+    end
+    
+    subgraph "Phase 2: Marketplace Logic"
+        LoadUser --> Dashboard[Select Role]
         
         %% Posting Flow
         Dashboard -- Task Master --> Post[Post Task]
         Post --> Check{Balance > Price?}
         Check -- No --> Fail[Error: Insufficient Funds]
-        Check -- Yes --> Lock[Debit Wallet -> Create Task]
+        Check -- Yes --> Lock[Debit Price from Wallet -> Create Task]
         
         %% Hero Flow & Atomic Locking
         Lock --> Feed[Live Global Feed]
-        Dashboard -- Hero --> Feed
-        Feed --> Action{Accept or Bid?}
+        Dashboard -- Hero --> Find[Find Quest]
+        Find --> Decision{Accept or Bid?}
         
-        Action -- Bid --> PlaceBid[Add to Bid List]
-        Action -- Accept --> Atomic{Is Status == 'OPEN'?}
+        %% BIDDING PATH (Connected to Master)
+        Decision -- Bid --> PlaceBid[Add to Bid List]
+        PlaceBid --> MasterCheck{Master Accepts?}
+        
+        MasterCheck -- No --> Feed[Remains on Feed]
+        MasterCheck -- Yes --> BidLock[Debit difference of Bid & Price from Wallet -> TaskStatus='ACTIVE']
+        
+        %% DIRECT ACCEPT PATH
+        Decision -- Accept --> Atomic{Is TaskStatus == 'OPEN'?}
         
         Atomic -- No --> RaceFail[Error: Too Late!]
-        Atomic -- Yes --> DB_Lock[Update: Status='ACTIVE']
+        Atomic -- Yes --> DB_Lock[Update: TaskStatus='ACTIVE']
+        
+        %% MERGE POINTS: Both paths lead to Execution
+        BidLock --> Execute[Execution Phase]
+        DB_Lock --> Execute
         
         %% Completion Flow
-        DB_Lock --> Execute[Execution Phase]
         Execute --> Result{User Action}
         
         %% Happy Path
@@ -89,7 +117,7 @@ graph TD
         %% Dispute Path
         Result -- Raise Dispute --> Bridge[Trigger Email Bridge]
         Bridge --> Admin[Admin Panel]
-        Admin -- Resolve --> PaySplit[Execute Split/Refund]
+        Admin -- Resolve --> PaySplit[Execute Split/Refund Master/Credit Hero]
     end
 ```
 ### ◆ Data Flow Diagram (DFD)
@@ -151,7 +179,7 @@ This structural diagram shows how our Tech Stack components interact. We follow 
 ```mermaid
 graph TD
     subgraph "Client Side (Frontend)"
-        User[Student User]
+        User[User]
         UI[React + Vite App]
         User -->|Interacts| UI
     end
