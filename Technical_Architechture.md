@@ -246,68 +246,64 @@ sequenceDiagram
     participant API as Node.js API
     participant DB as MongoDB (Atlas)
     participant H as Hero
-
+    participant MAIL as Email Service
 
     Note over TM, DB: PHASE 1: POSTING (Debit & Lock)
     
     TM->>API: POST /quests (Reward: ₹100)
     
     rect rgb(30, 30, 30)
-        Note right of API: 🛑 1. ATOMIC CHECK
+        Note right of API: 🛑 1. ATOMIC CHECK & DEBIT
         API->>DB: User.findOne({ _id: TM, balance: { $gte: 100 } })
+        API->>DB: User.updateOne({ $inc: { balance: -100 } })
+        API->>DB: Quest.create({ status: 'OPEN', escrow: 100 })
         
-        alt Insufficient Funds
-            DB-->>API: null
-            API-->>TM: Error: "Recharge Wallet!"
-        else Balance Available
-            Note right of API: 🛑 2. DOUBLE-ENTRY DEBIT
-            API->>DB: User.updateOne({ $inc: { balance: -100 } })
-            API->>DB: Quest.create({ status: 'OPEN', escrow: 100 })
-            API->>DB: Transaction.create({ type: 'debit', amount: 100 })
-            
-            DB-->>API: Success
-            API-->>TM: "Quest Posted & Funds Locked"
+        DB-->>API: Success
+        API-->>TM: "Funds Locked in Escrow"
+    end
+
+    Note over H, DB: PHASE 2: SELECTION (Bidding vs Direct)
+
+    alt OPTION A: Bidding (Negotiation)
+        H->>API: POST /bid (Offer: ₹120)
+        TM->>API: PUT /accept-bid (Hero: H)
+        rect rgb(30, 30, 30)
+            Note right of API: 🛑 2. ADJUST & LOCK
+            API->>DB: User.updateOne({ $inc: { balance: -20 } })
+            API->>DB: Quest.findOneAndUpdate({ status: 'OPEN' }, { status: 'ACTIVE' })
+        end
+    else OPTION B: Direct Accept
+        H->>API: PUT /accept-task
+        rect rgb(30, 30, 30)
+            API->>DB: Quest.findOneAndUpdate({ status: 'OPEN' }, { status: 'ACTIVE' })
         end
     end
 
-    Note over H, DB: PHASE 2: ATOMIC LOCKING (The "Race" Logic)
+    Note over H, DB: PHASE 3: EXECUTION & RESOLUTION
 
-    H->>API: POST /bid (Offer: ₹120)
-    API-->>TM: Notify: "New Bid: ₹120"
+    Note right of TM: OFFLINE ACTION
+    TM-->>H: (Verbal) Shares OTP "4592"
     
-    TM->>API: PUT /accept-bid (Hero: H)
-    
-    rect rgb(30, 30, 30)
-        Note right of API: 🛑 3. WALLET ADJUSTMENT
-        Note right of API: Diff = 120 - 100 = 20
-        API->>DB: User.updateOne({ $inc: { balance: -20 } })
+    alt PATH A: Successful Handshake
+        H->>API: POST /verify-otp (OTP: "4592")
         
-        Note right of API: 🛑 4. CRITICAL SECTION (The Lock)
-        API->>DB: Quest.findOneAndUpdate({ _id: Q, status: 'OPEN' }, { status: 'ACTIVE' })
-        
-        alt Lock Acquired
-            DB-->>API: Updated Doc
-            API-->>H: "Bid Won! Quest Assigned."
-        else Lock Failed (Race Condition)
-            DB-->>API: null
-            API-->>TM: Error: "Quest already active!"
-        end
-    end
-
-    Note over H, DB: PHASE 3: SETTLEMENT & DISPUTE
-    
-    H->>API: POST /verify-otp (OTP: "4592")
-    
-    rect rgb(30, 30, 30)
-        Note right of API: 🛑 5. VERIFICATION
-        API->>DB: Quest.findOne({ otp: "4592" })
-        
-        alt Valid OTP
+        rect rgb(30, 30, 30)
+            Note right of API: 🛑 3. VALIDATE & RELEASE
+            API->>DB: Quest.findOne({ otp: "4592" })
             API->>DB: User.updateOne({ _id: H }, { $inc: { balance: +120 } })
             API->>DB: Quest.updateOne({ status: 'COMPLETED' })
             API-->>H: "₹120 Credited!"
-        else Invalid
-            API-->>H: Error: "Wrong OTP"
+        end
+
+    else PATH B: Conflict (Dispute Resolution)
+        H->>API: POST /raise-dispute (Reason: "Refused to pay")
+        
+        rect rgb(30, 20, 20)
+            Note right of API: 🛑 4. FREEZE & ALERT
+            API->>DB: Quest.updateOne({ status: 'DISPUTED' })
+            API->>MAIL: Send Threaded Email (BCC: Admin)
+            MAIL-->>TM: "Reply with Proof"
+            MAIL-->>H: "Reply with Proof"
         end
     end
 ```
