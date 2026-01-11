@@ -243,10 +243,11 @@ graph TD
 sequenceDiagram
     autonumber
     participant TM as Task Master
+    participant H as Hero
     participant API as Node.js API
     participant DB as MongoDB (Atlas)
-    participant H as Hero
     participant MAIL as Email Service
+    participant AD as Admin (You)
 
     Note over TM, DB: PHASE 1: POSTING (Debit & Lock)
     
@@ -279,7 +280,7 @@ sequenceDiagram
         end
     end
 
-    Note over H, DB: PHASE 3: EXECUTION & RESOLUTION
+    Note over H, DB: PHASE 3: EXECUTION & DISPUTE
 
     Note right of TM: OFFLINE ACTION
     TM-->>H: (Verbal) Shares OTP "4592"
@@ -295,16 +296,33 @@ sequenceDiagram
             API-->>H: "₹120 Credited!"
         end
 
-    else PATH B: Conflict (Dispute Resolution)
+    else PATH B: Conflict (Dispute Raised)
         H->>API: POST /raise-dispute (Reason: "Refused to pay")
         
-        rect rgb(30, 20, 20)
+        rect rgb(60, 20, 20)
             Note right of API: 🛑 4. FREEZE & ALERT
             API->>DB: Quest.updateOne({ status: 'DISPUTED' })
             API->>MAIL: Send Threaded Email (BCC: Admin)
-            MAIL-->>TM: "Reply with Proof"
-            MAIL-->>H: "Reply with Proof"
         end
+        
+        Note over AD, DB: PHASE 4: ADMIN VERDICT
+        
+        AD->>API: POST /resolve (Decision)
+        
+        alt Decision: REFUND POSTER
+            API->>DB: User.updateOne({ _id: TM }, { $inc: { balance: +120 } })
+            API->>DB: Transaction.create({ type: "Refund" })
+        else Decision: PAY HERO
+            API->>DB: User.updateOne({ _id: H }, { $inc: { balance: +120 } })
+            API->>DB: Transaction.create({ type: "Settlement" })
+        else Decision: SPLIT 50/50
+            API->>DB: User.updateOne({ _id: TM }, { $inc: { balance: +60 } })
+            API->>DB: User.updateOne({ _id: H }, { $inc: { balance: +60 } })
+            API->>DB: Transaction.create({ type: "Split" })
+        end
+        
+        API->>DB: Quest.updateOne({ status: 'RESOLVED' })
+        API-->>AD: "Case Closed"
     end
 ```
 ## ◆ System Architecture Diagram (High-Level)
